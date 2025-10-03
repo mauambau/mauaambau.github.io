@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Biomoleküle Quiz — Schwierigkeitsstufen & Punkte</title>
+  <style>
+    :root{
+      --bg:#0f1724; --card:#0b1220; --accent:#60a5fa; --muted:#9ca3af;
+      --success:#10b981; --danger:#ef4444; --glass: rgba(255,255,255,0.03);
+      --radius:12px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:Inter, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg,#071029 0%, #071d2b 100%); color:#e6eef6;
+      min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;
+    }
+    .wrap{
+      width:100%; max-width:920px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:16px; padding:20px; box-shadow: 0 8px 30px rgba(2,6,23,0.7);
+      border:1px solid rgba(255,255,255,0.03);
+    }
+    header{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px}
+    header h1{font-size:18px; margin:0}
+    .meta{color:var(--muted); font-size:13px}
+    .controls{display:flex; gap:8px; flex-wrap:wrap}
+    .btn{
+      background:var(--glass); border:1px solid rgba(255,255,255,0.04); color:inherit;
+      padding:8px 12px; border-radius:10px; cursor:pointer; font-weight:600;
+    }
+    .btn.primary{background:linear-gradient(90deg,var(--accent), #3b82f6); color:#04243b; border:none}
+    .btn.ghost{background:transparent; border:1px dashed rgba(255,255,255,0.03)}
+    .levels{display:flex; gap:8px}
+    .levels .btn{min-width:90px}
+    main{display:grid; grid-template-columns: 1fr 320px; gap:18px; align-items:start}
+    @media (max-width:880px){ main{grid-template-columns:1fr} .sidebar{order:2} }
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding:16px;border-radius:12px}
+    .question{font-size:18px; margin-bottom:8px}
+    .choices{display:flex; flex-direction:column; gap:8px; margin-bottom:12px}
+    .choice{
+      background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.03); padding:10px 12px;
+      border-radius:10px; cursor:pointer; user-select:none; transition:transform .07s ease;
+    }
+    .choice:hover{transform:translateY(-3px)}
+    .choice.correct{border-color:rgba(16,185,129,0.6); box-shadow:0 4px 18px rgba(16,185,129,0.06)}
+    .choice.wrong{border-color:rgba(239,68,68,0.6); box-shadow:0 4px 18px rgba(239,68,68,0.06)}
+    .explain{background:rgba(255,255,255,0.02); padding:12px; border-radius:10px; color:var(--muted); margin-top:8px; font-size:14px}
+    .progress{height:10px; background:rgba(255,255,255,0.03); border-radius:10px; overflow:hidden}
+    .progress > i{display:block; height:100%; background:linear-gradient(90deg,#3b82f6,#60a5fa)}
+    .sidebar .stat{display:flex; justify-content:space-between; margin-bottom:10px; color:var(--muted)}
+    .small{font-size:13px; color:var(--muted)}
+    footer{display:flex; justify-content:space-between; margin-top:14px; gap:8px}
+    .center{display:flex; align-items:center; gap:8px}
+    .score-big{font-size:30px; font-weight:800; color:var(--accent)}
+    .tag{font-size:12px; padding:6px 8px; border-radius:999px; background:rgba(255,255,255,0.03)}
+    .hint{font-size:13px; color:var(--muted)}
+  </style>
+</head>
+<body>
+  <div class="wrap" role="application" aria-label="Biomoleküle Quiz">
+    <header>
+      <div>
+        <h1>Biomoleküle Quiz</h1>
+        <div class="meta">Wähle eine Schwierigkeit → beantworte Fragen → sammle Punkte</div>
+      </div>
+      <div class="controls">
+        <div class="levels" aria-label="Schwierigkeitsstufen">
+          <button class="btn" data-diff="easy">Leicht</button>
+          <button class="btn primary" data-diff="medium">Mittel</button>
+          <button class="btn" data-diff="hard">Schwer</button>
+        </div>
+        <button class="btn ghost" id="resetBtn" title="Alles zurücksetzen">Reset</button>
+      </div>
+    </header>
+
+    <main>
+      <section>
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:12px">
+            <div>
+              <div class="small">Frage <span id="qIndex">0</span>/<span id="qTotal">0</span></div>
+              <div class="question" id="questionText">Wähle zunächst eine Schwierigkeit.</div>
+            </div>
+            <div style="text-align:right">
+              <div class="small">Aktuelle Schwierigkeit</div>
+              <div class="tag" id="difficultyTag">—</div>
+            </div>
+          </div>
+
+          <div class="choices" id="choices">
+            <!-- Choices werden per JS eingefügt -->
+          </div>
+
+          <div id="feedbackArea" aria-live="polite"></div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px">
+            <div class="hint">Tipp: Erklärungen erscheinen nur bei falschen Antworten.</div>
+            <div style="display:flex; gap:8px">
+              <button class="btn" id="skipBtn">Überspringen</button>
+              <button class="btn primary" id="nextBtn">Nächste Frage</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="sidebar">
+        <div class="card">
+          <div class="stat"><span>Score</span><span class="score-big" id="score">0</span></div>
+          <div class="stat"><span>Richtige</span><span id="correctCount">0</span></div>
+          <div class="stat"><span>Falsche</span><span id="wrongCount">0</span></div>
+          <div style="margin-top:8px" class="small">Fortschritt</div>
+          <div class="progress" style="margin:6px 0"><i id="progBar" style="width:0%"></i></div>
+          <div style="margin-top:8px" class="small">Letzte Erklärung</div>
+          <div class="explain" id="lastExplain">Keine</div>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px">
+            <div class="small">Punkte pro richtige Antwort</div>
+            <div class="small" id="pointsPer">—</div>
+          </div>
+          <ul style="margin:0; padding-left:18px; color:var(--muted); font-size:14px">
+            <li>Leicht: 10 Punkte</li>
+            <li>Mittel: 20 Punkte</li>
+            <li>Schwer: 30 Punkte</li>
+          </ul>
+        </div>
+      </aside>
+    </main>
+
+    <footer>
+      <div class="small">Dieses Quiz basiert auf Lerninhalten zu Kohlenhydraten, Fetten & Proteinen.</div>
+      <div class="center">
+        <div class="small">© Quiz</div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // --- Fragenbank: pro Schwierigkeit ein Array von Fragen ---
+    // Jede Frage: {q: "Frage", choices: [...], correct: index, explain: "Erklärung bei FALSCH"}
+    const QUESTIONS = {
+      easy: [
+        {
+          q: "Welches Molekül ist ein Einfachzucker?",
+          choices: ["Stärke", "Glucose", "Cellulose", "Laktose"],
+          correct: 1,
+          explain: "Glucose ist ein Monosaccharid (Einfachzucker). Stärke und Cellulose sind Polysaccharide; Lactose ist ein Disaccharid."
+        },
+        {
+          q: "Woraus bestehen Triglyceride hauptsächlich?",
+          choices: ["Aminosäuren", "Glycerin + Fettsäuren", "Nukleinsäuren", "Monosaccharide"],
+          correct: 1,
+          explain: "Triglyceride bestehen aus Glycerin, das mit drei Fettsäuren verestert ist."
+        },
+        {
+          q: "Welches Element ist in Proteinen enthalten, aber nicht in einfachen Kohlenhydraten?",
+          choices: ["Kohlenstoff (C)", "Wasserstoff (H)", "Stickstoff (N)", "Sauerstoff (O)"],
+          correct: 2,
+          explain: "Proteine enthalten Stickstoff (in Aminogruppen) — Kohlenhydrate bestehen meist nur aus C, H und O."
+        }
+      ],
+      medium: [
+        {
+          q: "Welche funktionelle Gruppe ist charakteristisch für Aldehyde?",
+          choices: ["Hydroxylgruppe (-OH)", "Carbonylgruppe am Ende (-CHO)", "Aminogruppe (-NH2)", "Estergruppe (-COO-)"],
+          correct: 1,
+          explain: "Aldehyde besitzen eine Carbonylgruppe am Ende der Kette (–CHO)."
+        },
+        {
+          q: "Welche Aussage zu gesättigten Fettsäuren ist richtig?",
+          choices: ["Enthalten Doppelbindungen", "Sind meist flüssig bei Raumtemperatur", "Haben keine Doppelbindungen", "Sind immer ungesund"],
+          correct: 2,
+          explain: "Gesättigte Fettsäuren besitzen keine Doppelbindungen. Sie sind oft fest bei Raumtemperatur. 'Immer ungesund' ist zu pauschal."
+        },
+        {
+          q: "Was entsteht bei einer Kondensationsreaktion zwischen einem Alkohol und einer Säure?",
+          choices: ["Ester + Wasser", "Aldehyd + Wasser", "Amin + Ammoniak", "CO2 + H2O"],
+          correct: 0,
+          explain: "Bei der Veresterung entsteht ein Ester plus Wasser (Kondensationsreaktion)."
+        }
+      ],
+      hard: [
+        {
+          q: "Welche Eigenschaft unterscheidet α- und β-Form in Ringzuckern?",
+          choices: [
+            "Die Anzahl der C-Atome",
+            "Die Stellung der OH-Gruppe am anomeren Kohlenstoff",
+            "Ob sie löslich sind",
+            "Die Farbe"
+          ],
+          correct: 1,
+          explain: "α- und β-Form unterscheiden sich in der Stellung der Hydroxygruppe am anomeren Kohlenstoff (räumliche Anordnung)."
+        },
+        {
+          q: "Welches ist KEIN Beispiel für ein Proteid (zusammengesetztes Protein)?",
+          choices: ["Glykoprotein", "Lipoprotein", "Chromoprotein", "Cellulose"],
+          correct: 3,
+          explain: "Cellulose ist ein Polysaccharid, kein zusammengesetztes Protein. Die anderen sind Proteide (Protein + Zusatzgruppe)."
+        },
+        {
+          q: "Warum kann schon eine kleine Änderung in der Aminosäuresequenz die Proteinfunktion zerstören?",
+          choices: [
+            "Weil die Primärstruktur die Faltung bestimmt und Form = Funktion ist",
+            "Weil Aminosäuren immer giftig sind",
+            "Weil Proteine keine Seitenketten haben",
+            "Weil Proteine nur aus Zucker bestehen"
+          ],
+          correct: 0,
+          explain: "Die Sequenz bestimmt, wie das Protein faltet (Sekundär-/Tertiärstruktur). Eine falsche Sequenz kann die Form und damit die Funktion zerstören."
+        }
+      ]
+    };
+
+    // --- Punkte pro Schwierigkeit ---
+    const POINTS = { easy: 10, medium: 20, hard: 30 };
+
+    // --- State ---
+    let state = {
+      difficulty: null,
+      questions: [],
+      index: 0,
+      score: 0,
+      correct: 0,
+      wrong: 0
+    };
+
+    // --- DOM Elemente ---
+    const qIndexEl = document.getElementById('qIndex');
+    const qTotalEl = document.getElementById('qTotal');
+    const questionText = document.getElementById('questionText');
+    const choicesEl = document.getElementById('choices');
+    const scoreEl = document.getElementById('score');
+    const correctEl = document.getElementById('correctCount');
+    const wrongEl = document.getElementById('wrongCount');
+    const progBar = document.getElementById('progBar');
+    const lastExplain = document.getElementById('lastExplain');
+    const difficultyTag = document.getElementById('difficultyTag');
+    const pointsPerEl = document.getElementById('pointsPer');
+    const nextBtn = document.getElementById('nextBtn');
+    const skipBtn = document.getElementById('skipBtn');
+    const resetBtn = document.getElementById('resetBtn');
+
+    // --- Hilfsfunktionen ---
+    function shuffle(arr){ // Fisher-Yates
+      for(let i=arr.length-1;i>0;i--){
+        const j=Math.floor(Math.random()*(i+1));
+        [arr[i],arr[j]]=[arr[j],arr[i]];
+      }
+      return arr;
+    }
+
+    function setDifficulty(diff){
+      if(!QUESTIONS[diff]) return;
+      state.difficulty = diff;
+      // clone and shuffle questions for this run
+      state.questions = shuffle([...QUESTIONS[diff]]);
+      state.index = 0;
+      state.score = 0;
+      state.correct = 0;
+      state.wrong = 0;
+      updateUI();
+      renderQuestion();
+      // update points per
+      pointsPerEl.textContent = POINTS[diff] + " Punkte";
+      difficultyTag.textContent = diff.charAt(0).toUpperCase() + diff.slice(1);
+      // highlight selected difficulty button
+      document.querySelectorAll('[data-diff]').forEach(btn=>{
+        btn.classList.toggle('primary', btn.dataset.diff===diff);
+      });
+    }
+
+    function updateUI(){
+      qIndexEl.textContent = Math.min(state.index+1, state.questions.length);
+      qTotalEl.textContent = state.questions.length || 0;
+      scoreEl.textContent = state.score;
+      correctEl.textContent = state.correct;
+      wrongEl.textContent = state.wrong;
+      const progPercent = state.questions.length ? Math.round((state.index / state.questions.length) * 100) : 0;
+      progBar.style.width = progPercent + '%';
+    }
+
+    function renderQuestion(){
+      choicesEl.innerHTML = '';
+      document.getElementById('feedbackArea').innerHTML = '';
+      if(!state.questions.length){
+        questionText.textContent = "Bitte wähle eine Schwierigkeit, um zu starten.";
+        return;
+      }
+      if(state.index >= state.questions.length){
+        // Quiz beendet — zeige Zusammenfassung
+        questionText.textContent = "Ende! Hier ist dein Ergebnis:";
+        choicesEl.innerHTML = `
+          <div class="explain" style="font-size:15px">
+            Du hast <strong>${state.correct}</strong> von <strong>${state.questions.length}</strong> richtig beantwortet.<br>
+            Punkte: <strong>${state.score}</strong>.
+          </div>
+        `;
+        lastExplain.textContent = "—";
+        updateUI();
+        return;
+      }
+      const cur = state.questions[state.index];
+      questionText.textContent = cur.q;
+      // render choices
+      cur.choices.forEach((c, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'choice';
+        btn.textContent = c;
+        btn.type = 'button';
+        btn.onclick = () => handleAnswer(i, btn, cur);
+        btn.setAttribute('aria-pressed', 'false');
+        choicesEl.appendChild(btn);
+      });
+      updateUI();
+    }
+
+    function handleAnswer(selectedIndex, btnEl, cur){
+      // disable all choices
+      Array.from(choicesEl.children).forEach(b => b.disabled = true);
+      const correctIndex = cur.correct;
+      // visual feedback
+      if(selectedIndex === correctIndex){
+        btnEl.classList.add('correct');
+        state.score += POINTS[state.difficulty] || 0;
+        state.correct += 1;
+        // no explanation needed, but show small positive feedback
+        document.getElementById('feedbackArea').innerHTML = `<div class="explain" style="border-left:4px solid var(--success);">Richtig! +${POINTS[state.difficulty]} Punkte.</div>`;
+        lastExplain.textContent = "Richtig beantwortet — keine Erklärung nötig.";
+      } else {
+        // mark clicked wrong and mark correct
+        btnEl.classList.add('wrong');
+        Array.from(choicesEl.children)[correctIndex].classList.add('correct');
+        state.wrong += 1;
+        // show the explanation specifically because falsch
+        document.getElementById('feedbackArea').innerHTML = `<div class="explain" style="border-left:4px solid var(--danger);"><strong>Falsch.</strong> ${cur.explain}</div>`;
+        lastExplain.textContent = cur.explain;
+      }
+      // advance index only when "Nächste Frage" oder Skip pressed
+      updateUI();
+    }
+
+    nextBtn.addEventListener('click', () => {
+      if(!state.questions.length) return;
+      // move to next
+      if(state.index < state.questions.length) state.index++;
+      renderQuestion();
+    });
+
+    skipBtn.addEventListener('click', () => {
+      if(!state.questions.length) return;
+      // count as wrong if skipped? We'll not penalize, but count as wrong for tracking.
+      state.wrong += 1;
+      state.index++;
+      renderQuestion();
+    });
+
+    resetBtn.addEventListener('click', () => {
+      if(confirm('Quiz zurücksetzen? Dein aktueller Score geht verloren.')){
+        state = {difficulty:null, questions:[], index:0, score:0, correct:0, wrong:0};
+        difficultyTag.textContent = "—";
+        pointsPerEl.textContent = "—";
+        document.querySelectorAll('[data-diff]').forEach(btn=>btn.classList.remove('primary'));
+        renderQuestion();
+        updateUI();
+      }
+    });
+
+    // difficulty buttons
+    document.querySelectorAll('[data-diff]').forEach(btn=>{
+      btn.addEventListener('click', () => setDifficulty(btn.dataset.diff));
+    });
+
+    // init
+    renderQuestion();
+    updateUI();
+
+    // Optional: Tastatur-Unterstützung (1-4 um Antworten zu wählen)
+    window.addEventListener('keydown', (e) => {
+      if(!state.questions.length || state.index >= state.questions.length) return;
+      if(e.key >= '1' && e.key <= '4'){
+        const i = parseInt(e.key) - 1;
+        const btn = choicesEl.children[i];
+        if(btn && !btn.disabled) btn.click();
+      } else if(e.key === 'Enter'){
+        nextBtn.click();
+      } else if(e.key.toLowerCase() === 's'){
+        skipBtn.click();
+      }
+    });
+
+  </script>
+</body>
+</html>
+
