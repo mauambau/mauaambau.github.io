@@ -3,224 +3,260 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Biomoleküle Quiz — Schwierigkeitsstufen & Punkte</title>
+  <title>Biomoleküle Master-Quiz</title>
+  <meta name="description" content="Interaktives Quiz zu Kohlenhydraten, Fetten & Proteinen — 3 Schwierigkeitsstufen, Punkte & Erklärungen." />
   <style>
     :root{
-      --bg:#0f1724; --card:#0b1220; --accent:#60a5fa; --muted:#9ca3af;
-      --success:#10b981; --danger:#ef4444; --glass: rgba(255,255,255,0.03);
-      --radius:12px;
+      --bg:#0b1410;
+      --card:#06210f;
+      --accent:#10b981; /* grün */
+      --accent-2:#047857;
+      --muted:#9fb8a7;
+      --glass: rgba(255,255,255,0.03);
+      --danger:#ef4444;
+      --radius:14px;
+      --max-width:1100px;
     }
     *{box-sizing:border-box}
+    html,body{height:100%}
     body{
-      margin:0; font-family:Inter, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      background: linear-gradient(180deg,#071029 0%, #071d2b 100%); color:#e6eef6;
-      min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;
+      margin:0; font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: radial-gradient(1200px 600px at 10% 10%, #06341f 0%, rgba(6,36,15,0) 20%),
+                  radial-gradient(900px 500px at 90% 90%, #063825 0%, rgba(6,36,15,0) 30%),
+                  var(--bg);
+      color:#e6f7ef; -webkit-font-smoothing:antialiased;
+      display:flex; align-items:center; justify-content:center; padding:28px;
     }
-    .wrap{
-      width:100%; max-width:920px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border-radius:16px; padding:20px; box-shadow: 0 8px 30px rgba(2,6,23,0.7);
+
+    .container{
+      width:100%; max-width:var(--max-width); background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:16px; padding:18px; box-shadow:0 12px 50px rgba(2,8,6,0.7);
       border:1px solid rgba(255,255,255,0.03);
     }
-    header{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px}
-    header h1{font-size:18px; margin:0}
-    .meta{color:var(--muted); font-size:13px}
-    .controls{display:flex; gap:8px; flex-wrap:wrap}
+
+    header{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:18px}
+    header h1{font-size:20px; margin:0; letter-spacing:0.2px}
+    header p{margin:0; color:var(--muted); font-size:13px}
+
+    .top-controls{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
     .btn{
-      background:var(--glass); border:1px solid rgba(255,255,255,0.04); color:inherit;
-      padding:8px 12px; border-radius:10px; cursor:pointer; font-weight:600;
+      padding:8px 12px; border-radius:10px; cursor:pointer; border:1px solid rgba(255,255,255,0.04);
+      background:transparent; color:inherit; font-weight:600; font-size:13px;
     }
-    .btn.primary{background:linear-gradient(90deg,var(--accent), #3b82f6); color:#04243b; border:none}
-    .btn.ghost{background:transparent; border:1px dashed rgba(255,255,255,0.03)}
+    .btn.ghost{border-style:dashed}
+    .btn.primary{background:linear-gradient(90deg,var(--accent), var(--accent-2)); color:#02220f; border:none; box-shadow: 0 6px 16px rgba(16,185,129,0.12)}
+    .btn.small{padding:6px 8px; font-size:13px}
+
     .levels{display:flex; gap:8px}
-    .levels .btn{min-width:90px}
-    main{display:grid; grid-template-columns: 1fr 320px; gap:18px; align-items:start}
-    @media (max-width:880px){ main{grid-template-columns:1fr} .sidebar{order:2} }
-    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding:16px;border-radius:12px}
-    .question{font-size:18px; margin-bottom:8px}
-    .choices{display:flex; flex-direction:column; gap:8px; margin-bottom:12px}
+    .levels .btn{min-width:88px}
+
+    main{display:grid; grid-template-columns: 1fr 340px; gap:18px; align-items:start}
+    @media (max-width:960px){ main{grid-template-columns:1fr} .sidebar{order:2} }
+
+    .card{background:linear-gradient(180deg, rgba(0,0,0,0.18), rgba(255,255,255,0.02)); padding:16px; border-radius:12px; border:1px solid rgba(255,255,255,0.03)}
+    .question{font-size:18px; margin-bottom:10px}
+    .meta{color:var(--muted); font-size:13px}
+
+    .choices{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+    @media (max-width:640px){ .choices{grid-template-columns:1fr} }
+
     .choice{
-      background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.03); padding:10px 12px;
-      border-radius:10px; cursor:pointer; user-select:none; transition:transform .07s ease;
+      background:linear-gradient(180deg, rgba(255,255,255,0.012), rgba(255,255,255,0.01));
+      border:1px solid rgba(255,255,255,0.03); padding:12px; border-radius:10px; cursor:pointer;
+      display:flex; align-items:center; gap:10px; transition:transform .08s ease, box-shadow .08s ease, border-color .12s;
+      user-select:none;
     }
-    .choice:hover{transform:translateY(-3px)}
-    .choice.correct{border-color:rgba(16,185,129,0.6); box-shadow:0 4px 18px rgba(16,185,129,0.06)}
-    .choice.wrong{border-color:rgba(239,68,68,0.6); box-shadow:0 4px 18px rgba(239,68,68,0.06)}
-    .explain{background:rgba(255,255,255,0.02); padding:12px; border-radius:10px; color:var(--muted); margin-top:8px; font-size:14px}
-    .progress{height:10px; background:rgba(255,255,255,0.03); border-radius:10px; overflow:hidden}
-    .progress > i{display:block; height:100%; background:linear-gradient(90deg,#3b82f6,#60a5fa)}
-    .sidebar .stat{display:flex; justify-content:space-between; margin-bottom:10px; color:var(--muted)}
+    .choice:hover{transform:translateY(-5px)}
+    .choice .label{font-weight:700; color:var(--accent); min-width:26px; text-align:center}
+    .choice.correct{border-color:rgba(16,185,129,0.6); box-shadow:0 10px 30px rgba(16,185,129,0.06)}
+    .choice.wrong{border-color:rgba(239,68,68,0.6); box-shadow:0 10px 30px rgba(239,68,68,0.06)}
+    .explain{
+      margin-top:12px; background: rgba(255,255,255,0.02); padding:12px; border-radius:10px; color:var(--muted); font-size:14px;
+      border-left:4px solid rgba(255,255,255,0.03)
+    }
+
+    .sidebar .stat{display:flex; justify-content:space-between; margin-bottom:8px; color:var(--muted)}
+    .score{font-size:36px; font-weight:800; color:var(--accent)}
+    .progress{height:12px; background:rgba(255,255,255,0.03); border-radius:999px; overflow:hidden}
+    .progress > i{display:block; height:100%; background:linear-gradient(90deg,var(--accent), var(--accent-2))}
+
+    footer{display:flex; justify-content:space-between; gap:8px; margin-top:14px; align-items:center}
     .small{font-size:13px; color:var(--muted)}
-    footer{display:flex; justify-content:space-between; margin-top:14px; gap:8px}
-    .center{display:flex; align-items:center; gap:8px}
-    .score-big{font-size:30px; font-weight:800; color:var(--accent)}
-    .tag{font-size:12px; padding:6px 8px; border-radius:999px; background:rgba(255,255,255,0.03)}
-    .hint{font-size:13px; color:var(--muted)}
+    .tag{font-size:12px; padding:6px 10px; border-radius:999px; background:rgba(255,255,255,0.02); color:var(--muted)}
+
+    /* micro animations */
+    .fadein{animation: fade .28s ease both}
+    @keyframes fade{ from {opacity:0; transform:translateY(6px)} to{opacity:1; transform:none} }
+
+    /* accessibility focus */
+    .choice:focus{outline:3px solid rgba(16,185,129,0.14)}
+    .sr-only{position:absolute; left:-9999px}
   </style>
 </head>
 <body>
-  <div class="wrap" role="application" aria-label="Biomoleküle Quiz">
+  <div class="container" role="application" aria-label="Biomoleküle Quiz">
     <header>
       <div>
-        <h1>Biomoleküle Quiz</h1>
-        <div class="meta">Wähle eine Schwierigkeit → beantworte Fragen → sammle Punkte</div>
+        <h1>Biomoleküle — Master-Quiz</h1>
+        <p class="meta">3 Schwierigkeitsstufen • Erklärungen bei falschen Antworten • Schöne grüne Oberfläche</p>
       </div>
-      <div class="controls">
-        <div class="levels" aria-label="Schwierigkeitsstufen">
-          <button class="btn" data-diff="easy">Leicht</button>
-          <button class="btn primary" data-diff="medium">Mittel</button>
-          <button class="btn" data-diff="hard">Schwer</button>
+      <div class="top-controls">
+        <div class="levels" role="tablist" aria-label="Schwierigkeitsstufen">
+          <button class="btn" data-diff="easy" aria-selected="false">Leicht</button>
+          <button class="btn primary" data-diff="medium" aria-selected="true">Mittel</button>
+          <button class="btn" data-diff="hard" aria-selected="false">Schwer</button>
         </div>
-        <button class="btn ghost" id="resetBtn" title="Alles zurücksetzen">Reset</button>
+        <button class="btn ghost" id="resetBtn" title="Zurücksetzen">Reset</button>
+        <button class="btn small" id="downloadBtn" title="Ergebnisse herunterladen">Export</button>
       </div>
     </header>
 
     <main>
-      <section>
-        <div class="card">
-          <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:12px">
-            <div>
-              <div class="small">Frage <span id="qIndex">0</span>/<span id="qTotal">0</span></div>
-              <div class="question" id="questionText">Wähle zunächst eine Schwierigkeit.</div>
-            </div>
-            <div style="text-align:right">
-              <div class="small">Aktuelle Schwierigkeit</div>
-              <div class="tag" id="difficultyTag">—</div>
-            </div>
+      <section class="card fadein" aria-live="polite">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:12px">
+          <div>
+            <div class="meta">Frage <strong id="qIndex">0</strong>/<strong id="qTotal">0</strong></div>
+            <div id="questionText" class="question">Wähle eine Schwierigkeit, um zu starten.</div>
           </div>
-
-          <div class="choices" id="choices">
-            <!-- Choices werden per JS eingefügt -->
+          <div style="text-align:right">
+            <div class="meta">Schwierigkeit</div>
+            <div class="tag" id="difficultyTag">Mittel</div>
           </div>
+        </div>
 
-          <div id="feedbackArea" aria-live="polite"></div>
+        <div id="choices" class="choices" aria-label="Antwortmöglichkeiten">
+          <!-- Buttons generated by JS -->
+        </div>
 
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px">
-            <div class="hint">Tipp: Erklärungen erscheinen nur bei falschen Antworten.</div>
-            <div style="display:flex; gap:8px">
-              <button class="btn" id="skipBtn">Überspringen</button>
-              <button class="btn primary" id="nextBtn">Nächste Frage</button>
-            </div>
+        <div id="feedbackArea" aria-live="assertive"></div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; gap:12px">
+          <div class="small">Tastatur: <strong>1–4</strong> wählen • <strong>Enter</strong> nächste • <strong>S</strong> skip</div>
+          <div style="display:flex; gap:8px">
+            <button class="btn" id="skipBtn">Überspringen</button>
+            <button class="btn primary" id="nextBtn">Nächste Frage</button>
           </div>
         </div>
       </section>
 
       <aside class="sidebar">
-        <div class="card">
-          <div class="stat"><span>Score</span><span class="score-big" id="score">0</span></div>
+        <div class="card fadein">
+          <div class="stat"><span>Score</span><span class="score" id="score">0</span></div>
           <div class="stat"><span>Richtige</span><span id="correctCount">0</span></div>
           <div class="stat"><span>Falsche</span><span id="wrongCount">0</span></div>
-          <div style="margin-top:8px" class="small">Fortschritt</div>
-          <div class="progress" style="margin:6px 0"><i id="progBar" style="width:0%"></i></div>
-          <div style="margin-top:8px" class="small">Letzte Erklärung</div>
-          <div class="explain" id="lastExplain">Keine</div>
+
+          <div style="margin-top:12px" class="meta">Fortschritt</div>
+          <div class="progress" style="margin:8px 0"><i id="progBar" style="width:0%"></i></div>
+
+          <div style="margin-top:10px" class="meta">Letzte Erklärung (bei falscher Antwort)</div>
+          <div class="explain" id="lastExplain">—</div>
         </div>
 
         <div style="height:12px"></div>
 
-        <div class="card">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px">
-            <div class="small">Punkte pro richtige Antwort</div>
-            <div class="small" id="pointsPer">—</div>
+        <div class="card fadein">
+          <div class="meta" style="display:flex; justify-content:space-between; align-items:center">
+            <span>Punkte pro richtige Antwort</span><span id="pointsPer">—</span>
           </div>
-          <ul style="margin:0; padding-left:18px; color:var(--muted); font-size:14px">
+          <ul style="margin:12px 0 0 18px; color:var(--muted)">
             <li>Leicht: 10 Punkte</li>
             <li>Mittel: 20 Punkte</li>
             <li>Schwer: 30 Punkte</li>
           </ul>
+          <hr style="opacity:.06; margin:12px 0">
+          <div class="meta">Best Scores</div>
+          <div style="display:flex; gap:8px; margin-top:8px">
+            <div class="tag" id="bestEasy">Leicht: —</div>
+            <div class="tag" id="bestMed">Mittel: —</div>
+            <div class="tag" id="bestHard">Schwer: —</div>
+          </div>
         </div>
       </aside>
     </main>
 
     <footer>
-      <div class="small">Dieses Quiz basiert auf Lerninhalten zu Kohlenhydraten, Fetten & Proteinen.</div>
-      <div class="center">
-        <div class="small">© Quiz</div>
-      </div>
+      <div class="small">Speichere die Datei als <strong>index.html</strong> und pushe das Repo — ideal für GitHub Pages.</div>
+      <div class="small">© Biomoleküle Quiz</div>
     </footer>
   </div>
 
   <script>
-    // --- Fragenbank: pro Schwierigkeit ein Array von Fragen ---
-    // Jede Frage: {q: "Frage", choices: [...], correct: index, explain: "Erklärung bei FALSCH"}
+    // --- Fragen (20 pro Schwierigkeit) ---
     const QUESTIONS = {
       easy: [
-        {
-          q: "Welches Molekül ist ein Einfachzucker?",
-          choices: ["Stärke", "Glucose", "Cellulose", "Laktose"],
-          correct: 1,
-          explain: "Glucose ist ein Monosaccharid (Einfachzucker). Stärke und Cellulose sind Polysaccharide; Lactose ist ein Disaccharid."
-        },
-        {
-          q: "Woraus bestehen Triglyceride hauptsächlich?",
-          choices: ["Aminosäuren", "Glycerin + Fettsäuren", "Nukleinsäuren", "Monosaccharide"],
-          correct: 1,
-          explain: "Triglyceride bestehen aus Glycerin, das mit drei Fettsäuren verestert ist."
-        },
-        {
-          q: "Welches Element ist in Proteinen enthalten, aber nicht in einfachen Kohlenhydraten?",
-          choices: ["Kohlenstoff (C)", "Wasserstoff (H)", "Stickstoff (N)", "Sauerstoff (O)"],
-          correct: 2,
-          explain: "Proteine enthalten Stickstoff (in Aminogruppen) — Kohlenhydrate bestehen meist nur aus C, H und O."
-        }
+        { q: "Was ist ein Monosaccharid?", choices: ["Mehrfachzucker","Einfachzucker","Fettsäure","Aminosäure"], correct: 1, explain: "Monosaccharide sind Einfachzucker (z. B. Glucose, Fructose)." },
+        { q: "Welches Element ist in Proteinen enthalten, aber nicht typisch in Kohlenhydraten?", choices: ["Kalium","Stickstoff","Chlor","Eisen"], correct: 1, explain: "Proteine enthalten Stickstoff (in Aminogruppen). Kohlenhydrate bestehen meist nur aus C, H und O." },
+        { q: "Woraus bestehen Triglyceride hauptsächlich?", choices: ["Glycerin + Fettsäuren","Aminosäuren","Monosaccharide","Nukleotide"], correct: 0, explain: "Triglyceride = Glycerin + drei Fettsäuren (Esterbindung)." },
+        { q: "Welches ist ein Baustein von Proteinen?", choices: ["Glucose","Fettsäure","Aminosäure","Nukleotid"], correct: 2, explain: "Proteine bestehen aus Aminosäuren." },
+        { q: "Was ist die Hauptfunktion von Enzymen?", choices: ["Energie speichern","Reaktionsgeschwindigkeit erhöhen","Membran bilden","Information speichern"], correct: 1, explain: "Enzyme sind Katalysatoren — sie beschleunigen chemische Reaktionen." },
+        { q: "Welche Bindung verbindet Aminosäuren in einem Protein?", choices: ["Glykosidbindung","Peptidbindung","Esterbindung","Etherbindung"], correct: 1, explain: "Aminosäuren werden durch Peptidbindungen (Amidbindung) verknüpft." },
+        { q: "Welche der folgenden ist eine Nukleinsäure?", choices: ["DNA","Triglycerid","Glucose","Cellulose"], correct: 0, explain: "DNA ist eine Nukleinsäure; die anderen sind unterschiedliche Molekülklassen." },
+        { q: "Welcher Zucker ist die wichtigste Energiequelle für Zellen?", choices: ["Fructose","Glucose","Cellulose","Glycerol"], correct: 1, explain: "Glucose ist der primäre Energieträger in vielen Zellen." },
+        { q: "Was ist ein Disaccharid?", choices: ["Einzelzucker","Zweifachzucker","Polysaccharid","Lipide"], correct: 1, explain: "Disaccharide bestehen aus zwei Monosacchariden (z. B. Saccharose = Glucose+Fructose)." },
+        { q: "Welche Fettsäuren enthalten Doppelbindungen?", choices: ["Ungesättigte","Gesättigte","Wasser","Salze"], correct: 0, explain: "Ungesättigte Fettsäuren besitzen mindestens eine Doppelbindung." },
+        { q: "Was enthält ein Nukleotid nicht?", choices: ["Base","Zucker","Phosphat","Aminogruppe"], correct: 3, explain: "Nukleotide bestehen aus Base + Zucker + Phosphat — keine Aminogruppe." },
+        { q: "Welches Molekül speichert genetische Information?", choices: ["Proteine","DNA","Fette","Polysaccharide"], correct: 1, explain: "DNA speichert die genetische Information." },
+        { q: "Welche Molekülklasse ist typisch für Zellmembranen?", choices: ["Lipide","Nukleinsäuren","Monosaccharide","Stärke"], correct: 0, explain: "Phospholipide sind Hauptbestandteile biologischer Membranen." },
+        { q: "Wie nennt man Polymere aus Glucose?", choices: ["Proteine","Polysaccharide","Lipide","Nukleinsäuren"], correct: 1, explain: "Stärke, Glycogen und Cellulose sind Polysaccharide aus Glucoseeinheiten." },
+        { q: "Welche Funktion haben Proteine NICHT primär?", choices: ["Katalyse","Struktur","Energiequelle","Informationsträger"], correct: 3, explain: "Information wird vorwiegend von DNA/RNA getragen." },
+        { q: "Welches Molekül ist amphiphil (hydrophob + hydrophil)?", choices: ["Triglycerid","Phospholipid","Stärke","Glucose"], correct: 1, explain: "Phospholipide haben hydrophile Köpfe und hydrophobe Schwänze — ideal für Membranen." },
+        { q: "Welche Bindung entsteht zwischen Monosacchariden?", choices: ["Peptidbindung","Esterbindung","Glykosidbindung","Disulfidbrücke"], correct: 2, explain: "Monosaccharide verbinden sich über Glykosidbindungen." },
+        { q: "Welches ist KEIN Kohlenhydrat?", choices: ["Cellulose","Glycerin","Stärke","Glucose"], correct: 1, explain: "Glycerin ist ein dreiwertiger Alkohol (Baustein von Lipiden), kein Kohlenhydrat." },
+        { q: "Welche typische Endung haben viele Enzyme?", choices: ["-ase","-ose","-in","-ol"], correct: 0, explain: "Die Endung „-ase“ ist häufig bei Enzymen (z. B. Lipase, Amylase)." },
+        { q: "Was passiert bei einer Kondensationsreaktion?", choices: ["Wasser wird abgespalten","Wasser wird hinzugefügt","Elektronen werden übertragen","Ein Atom wird substituiert"], correct: 0, explain: "Kondensationsreaktionen verknüpfen Monomere unter Abspaltung von Wasser." }
       ],
       medium: [
-        {
-          q: "Welche funktionelle Gruppe ist charakteristisch für Aldehyde?",
-          choices: ["Hydroxylgruppe (-OH)", "Carbonylgruppe am Ende (-CHO)", "Aminogruppe (-NH2)", "Estergruppe (-COO-)"],
-          correct: 1,
-          explain: "Aldehyde besitzen eine Carbonylgruppe am Ende der Kette (–CHO)."
-        },
-        {
-          q: "Welche Aussage zu gesättigten Fettsäuren ist richtig?",
-          choices: ["Enthalten Doppelbindungen", "Sind meist flüssig bei Raumtemperatur", "Haben keine Doppelbindungen", "Sind immer ungesund"],
-          correct: 2,
-          explain: "Gesättigte Fettsäuren besitzen keine Doppelbindungen. Sie sind oft fest bei Raumtemperatur. 'Immer ungesund' ist zu pauschal."
-        },
-        {
-          q: "Was entsteht bei einer Kondensationsreaktion zwischen einem Alkohol und einer Säure?",
-          choices: ["Ester + Wasser", "Aldehyd + Wasser", "Amin + Ammoniak", "CO2 + H2O"],
-          correct: 0,
-          explain: "Bei der Veresterung entsteht ein Ester plus Wasser (Kondensationsreaktion)."
-        }
+        { q: "Was entsteht bei der Hydrolyse eines Polysaccharids?", choices: ["Monosaccharide","Ester","Proteine","Lipide"], correct: 0, explain: "Hydrolyse spaltet Polysaccharide in Monosaccharide (Wasser wird genutzt)." },
+        { q: "Welche Bindung verbindet Fettsäuren mit Glycerin in Triglyceriden?", choices: ["Peptidbindung","Esterbindung","Glykosidbindung","Phosphodiesterbindung"], correct: 1, explain: "Fettsäuren sind über Esterbindungen an Glycerin gebunden." },
+        { q: "Welcher Zucker kommt in DNA vor?", choices: ["Ribose","Desoxyribose","Glucose","Fructose"], correct: 1, explain: "DNA enthält Desoxyribose (ohne ein Sauerstoffatom an C2')." },
+        { q: "Welche Aminosäure enthält Schwefel?", choices: ["Glycin","Cystein","Serin","Prolin"], correct: 1, explain: "Cystein enthält eine Thiolgruppe (-SH) und kann Disulfidbrücken bilden." },
+        { q: "Wie heißt die chemische Natur einer Peptidbindung?", choices: ["Amidbindung","Esterbindung","Etherbindung","Glykosidbindung"], correct: 0, explain: "Peptidbindungen sind Amidbindungen zwischen Carboxyl- und Aminogruppe." },
+        { q: "Welche Ebene beschreibt lokale Faltung (α-Helix, β-Faltblatt)?", choices: ["Primärstruktur","Sekundärstruktur","Tertiärstruktur","Quartärstruktur"], correct: 1, explain: "Sekundärstruktur bezieht sich auf lokale Faltungsmotive wie α-Helices." },
+        { q: "Welche Wechselwirkung trägt NICHT wesentlich zur Proteinfaltung bei?", choices: ["Disulfidbrücken","Wasserstoffbrücken","Ionenbindungen","Glykosidbindungen"], correct: 3, explain: "Glykosidbindungen sind Verknüpfungen in Zuckern, nicht typisch für Proteinfaltung." },
+        { q: "Wie viel Energie liefert ca. 1 g Fett (Brennwert)?", choices: ["~9 kcal","~4 kcal","~7 kcal","~2 kcal"], correct: 0, explain: "Fette liefern etwa 9 kcal/g; Kohlenhydrate ~4 kcal/g." },
+        { q: "Welche glykosidische Bindung ist typisch für Amylose (Stärke)?", choices: ["α-1,4","β-1,4","α-1,6","β-1,6"], correct: 0, explain: "Amylose hat überwiegend α-1,4-glykosidische Bindungen." },
+        { q: "Welche Klasse enthält Phosphatgruppen?", choices: ["Phospholipide","Triglyceride","Sterole","Wachse"], correct: 0, explain: "Phospholipide besitzen eine Phosphatgruppe im hydrophilen Kopf." },
+        { q: "Was bedeutet 'Denaturierung' eines Proteins?", choices: ["Primärstruktur ändert sich","Sekundär/Tertiärstruktur geht verloren","Aminosäuren werden modifiziert","Protein wird synthetisiert"], correct: 1, explain: "Denaturierung zerstört die höhere Struktur ohne die Primärsequenz zu ändern." },
+        { q: "Welche Base kommt in RNA anstelle von Thymin vor?", choices: ["Thymin","Uracil","Adenin","Cytosin"], correct: 1, explain: "RNA verwendet Uracil statt Thymin." },
+        { q: "Wie entstehen Transfette oft industriell?", choices: ["Teilweise Hydrierung von Pflanzenölen","Natürlich in Gemüse","Bei Fermentation","Durch Karamellisierung"], correct: 0, explain: "Teilweise Hydrierung kann trans-Fettsäuren erzeugen." },
+        { q: "Welches Molekül ist der unmittelbare universelle Energiespeicher in Zellen?", choices: ["ATP","DNA","Glucose","NADH"], correct: 0, explain: "ATP liefert schnell nutzbare Energie für zahlreiche Reaktionen." },
+        { q: "Welche Reaktion verbindet Monomere zu Polymeren?", choices: ["Kondensation","Hydrolyse","Oxidation","Reduktion"], correct: 0, explain: "Kondensationsreaktionen verknüpfen Monomere, oft mit Wasserabspaltung." },
+        { q: "Welche Methode trennt Proteine nach Größe (elektrophoretisch)?", choices: ["Gelelektrophorese","Chromatographie","PCR","ELISA"], correct: 0, explain: "SDS-PAGE ist eine Form der Gelelektrophorese zur Trennung nach Größe." },
+        { q: "Was ist ein prosthetischer Rest in Proteinen?", choices: ["Häm in Hämoglobin","Glucose in Stärke","DNA in Chromosomen","Triglycerid im Darm"], correct: 0, explain: "Ein prosthetischer Rest ist eine nicht-Protein-Gruppe, kovalent oder fest gebunden (z. B. Häm)." },
+        { q: "Welche Eigenschaft hat Cellulose (polymer aus Glucose)?", choices: ["β-1,4, linear und strukturell stabil","α-1,4, verzweigt","Amphiphil","Ist ein Protein"], correct: 0, explain: "Cellulose ist linear mit β-1,4-Bindungen — feste, faserige Struktur." },
+        { q: "Welche Aminosäure kann Disulfidbrücken bilden?", choices: ["Cystein","Lysin","Valin","Alanine"], correct: 0, explain: "Nur Cystein besitzt die Thiolgruppe für Disulfidbrücken." },
+        { q: "Warum sind Enzyme substratspezifisch?", choices: ["Weil die aktive Stelle räumlich passt","Weil alle Substrate gleich binden","Weil Substrate gleiche Größe haben","Weil Enzyme zufällig arbeiten"], correct: 0, explain: "Aktive Stelle und räumliche/chemische Wechselwirkungen bestimmen Substratspezifität." }
       ],
       hard: [
-        {
-          q: "Welche Eigenschaft unterscheidet α- und β-Form in Ringzuckern?",
-          choices: [
-            "Die Anzahl der C-Atome",
-            "Die Stellung der OH-Gruppe am anomeren Kohlenstoff",
-            "Ob sie löslich sind",
-            "Die Farbe"
-          ],
-          correct: 1,
-          explain: "α- und β-Form unterscheiden sich in der Stellung der Hydroxygruppe am anomeren Kohlenstoff (räumliche Anordnung)."
-        },
-        {
-          q: "Welches ist KEIN Beispiel für ein Proteid (zusammengesetztes Protein)?",
-          choices: ["Glykoprotein", "Lipoprotein", "Chromoprotein", "Cellulose"],
-          correct: 3,
-          explain: "Cellulose ist ein Polysaccharid, kein zusammengesetztes Protein. Die anderen sind Proteide (Protein + Zusatzgruppe)."
-        },
-        {
-          q: "Warum kann schon eine kleine Änderung in der Aminosäuresequenz die Proteinfunktion zerstören?",
-          choices: [
-            "Weil die Primärstruktur die Faltung bestimmt und Form = Funktion ist",
-            "Weil Aminosäuren immer giftig sind",
-            "Weil Proteine keine Seitenketten haben",
-            "Weil Proteine nur aus Zucker bestehen"
-          ],
-          correct: 0,
-          explain: "Die Sequenz bestimmt, wie das Protein faltet (Sekundär-/Tertiärstruktur). Eine falsche Sequenz kann die Form und damit die Funktion zerstören."
-        }
+        { q: "Was ist die Michaelis-Menten-Konstante Km?", choices: ["Substratkonzentration bei halber Vmax","Maximale Reaktionsgeschwindigkeit","Enzymmasse","Enzymkonzentration"], correct: 0, explain: "Km ist die Substratkonzentration, bei der die Reaktionsgeschwindigkeit halbmaximal ist — ein Maß für Affinität." },
+        { q: "Welche Wechselwirkung stabilisiert besonders den hydrophoben Kern eines Proteins?", choices: ["Hydrophobe Wechselwirkungen","Ionenbindung","Wasserstoffbrücken","Disulfidbrücken"], correct: 0, explain: "Hydrophobe Effekte treiben unpolare Seitenketten ins Innere und stabilisieren so den Kern." },
+        { q: "Welche glykosidische Bindung findet man in Cellulose?", choices: ["β-1,4","α-1,4","α-1,6","β-1,6"], correct: 0, explain: "Cellulose besteht aus β-1,4-verknüpften Glucoseeinheiten." },
+        { q: "Wie viele Basenpaare pro Umdrehung hat die B-Form der DNA ungefähr?", choices: ["10.5","12","9","7"], correct: 0, explain: "B-DNA hat ≈10.5 Basenpaare pro Helix-Umdrehung." },
+        { q: "Was ist allosterische Regulation?", choices: ["Regulation durch Bindung an eine andere Stelle als das aktive Zentrum","Abbau von Enzymen","Unabhängige Regulation","Phosphorylierung immer notwendig"], correct: 0, explain: "Bei allosterischer Regulation bindet ein Effektor an eine andere Stelle und ändert die Enzymaktivität." },
+        { q: "Welche Methode liefert atomare Strukturen von Proteinen?", choices: ["Röntgenkristallographie","PCR","ELISA","Gelelektrophorese"], correct: 0, explain: "Röntgenkristallographie (oder NMR/Cryo-EM) liefert atomare Strukturen." },
+        { q: "Welche Basenpaarung ist korrekt in DNA?", choices: ["A-T und G-C","A-U und G-C","A-G und C-T","A-C und G-T"], correct: 0, explain: "Adenin paart mit Thymin (2 H-Bonds), Guanin mit Cytosin (3 H-Bonds)." },
+        { q: "Warum erhöhen ungesättigte Fettsäuren die Membranfluidität?", choices: ["Doppeltbindungen erzeugen Knicke, weniger dichte Packung","Weil sie starr sind","Weil sie kurz sind","Weil sie ionisch sind"], correct: 0, explain: "Cis-Doppelbindungen erzeugen Knicke, die die dichte Packung reduzieren — mehr Fluidität." },
+        { q: "Was deutet ein kleiner Km-Wert für ein Enzym auf?", choices: ["Hohe Affinität zum Substrat","Niedrige Affinität","Hohe Vmax","Keine Aktivität"], correct: 0, explain: "Kleines Km → hohe Affinität (wenig Substrat nötig für halbmaximale Geschwindigkeit)." },
+        { q: "Was bedeutet Glycosylierung bei Proteinen?", choices: ["Kovalente Anlagerung von Zucker","Protein-Abbau","DNA-Replikation","Protein-Synthese"], correct: 0, explain: "Glykosylierung hängt Zuckerreste an Proteine (wichtiger posttranslationaler Modifikationsprozess)." },
+        { q: "Welche Basen gehören zu den Purinen?", choices: ["Adenin und Guanin","Cytosin und Thymin","Uracil und Cytosin","Thymin und Uracil"], correct: 0, explain: "Purine (zwei Ringe): Adenin & Guanin. Pyrimidine (ein Ring): C, T, U." },
+        { q: "Welcher Prozess erzeugt ATP direkt in der ATP-Synthase?", choices: ["Oxidative Phosphorylierung (Protonengradient)","Glykolyse","Anaerobe Fermentation","Translation"], correct: 0, explain: "Protonenfluss durch ATP-Synthase treibt die ATP-Produktion in Mitochondrien an." },
+        { q: "Welches ist ein reduzierendes Zucker (kann als Reduktionsmittel wirken)?", choices: ["Glucose","Saccharose","Stärke","Cellulose"], correct: 0, explain: "Glucose ist reduzierend; Saccharose ist nicht-reduzierend, da beide anomeren C gebunden sind." },
+        { q: "Was bedeutet Chiralität bei Aminosäuren?", choices: ["Asymmetrisches C-Atom → Enantiomere (L/D)","Gleiche Rotationseigenschaften","Keine räumliche Struktur","Amino- und Carboxylgruppe fehlen"], correct: 0, explain: "Die meisten Aminosäuren besitzen ein asymmetrisches (chirales) C-Atom." },
+        { q: "Welches Vitamin ist wichtig für die Kollagenbildung (Hydroxylierung)?", choices: ["Vitamin C","Vitamin D","Vitamin K","Vitamin B12"], correct: 0, explain: "Vitamin C (Ascorbinsäure) ist Co-Faktor bei der Hydroxylierung von Prolin/Lysin im Kollagen." },
+        { q: "Wodurch werden β-Faltblätter vor allem stabilisiert?", choices: ["Interkettige Wasserstoffbrücken","Ionenbindungen","Disulfidbrücken","Hydratation"], correct: 0, explain: "Wasserstoffbrücken zwischen Peptidketten stabilisieren β-Faltblätter." },
+        { q: "Welcher Unterschied besteht zwischen DNA und RNA (kurz)?", choices: ["Desoxyribose + Thymin vs Ribose + Uracil","DNA ist einzelsträngig","RNA enthält Thymin","DNA ist kürzer"], correct: 0, explain: "DNA: Desoxyribose & Thymin; RNA: Ribose & Uracil." },
+        { q: "Was machen molekulare Chaperone?", choices: ["Helfen bei der korrekten Proteinfaltung","Zersetzen Proteine","Katalysieren DNA-Schnitt","Transportieren Lipide"], correct: 0, explain: "Chaperone unterstützen korrektes Falten und verhindern Aggregation." },
+        { q: "Welche Reaktionsklasse beschreibt Veresterung?", choices: ["Kondensationsreaktion (Esterbildung)","Hydrolyse","Redoxreaktion","Isomerisierung"], correct: 0, explain: "Esterbildung ist eine Kondensationsreaktion mit Wasserabspaltung." },
+        { q: "Wie beeinflusst kompetitive Hemmung Vmax und Km?", choices: ["Vmax unverändert, Km erhöht","Vmax reduziert, Km unverändert","Vmax erhöht, Km reduziert","Vmax reduziert, Km erhöht"], correct: 0, explain: "Bei kompetitiver Hemmung bleibt Vmax gleich (bei hohen Substraten), der scheinbare Km steigt (geringere Affinität)." }
       ]
     };
 
-    // --- Punkte pro Schwierigkeit ---
+    // --- Punkte ---
     const POINTS = { easy: 10, medium: 20, hard: 30 };
 
-    // --- State ---
+    // --- UI / State ---
     let state = {
-      difficulty: null,
+      difficulty: 'medium',
       questions: [],
       index: 0,
       score: 0,
@@ -228,7 +264,7 @@
       wrong: 0
     };
 
-    // --- DOM Elemente ---
+    // DOM
     const qIndexEl = document.getElementById('qIndex');
     const qTotalEl = document.getElementById('qTotal');
     const questionText = document.getElementById('questionText');
@@ -243,147 +279,155 @@
     const nextBtn = document.getElementById('nextBtn');
     const skipBtn = document.getElementById('skipBtn');
     const resetBtn = document.getElementById('resetBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const bestEasy = document.getElementById('bestEasy');
+    const bestMed = document.getElementById('bestMed');
+    const bestHard = document.getElementById('bestHard');
 
-    // --- Hilfsfunktionen ---
-    function shuffle(arr){ // Fisher-Yates
+    function shuffle(arr){
       for(let i=arr.length-1;i>0;i--){
-        const j=Math.floor(Math.random()*(i+1));
-        [arr[i],arr[j]]=[arr[j],arr[i]];
+        const j = Math.floor(Math.random()*(i+1));
+        [arr[i],arr[j]] = [arr[j],arr[i]];
       }
       return arr;
     }
 
+    // clone + shuffle choices while remapping correct index
+    function prepareQuestions(diff){
+      const raw = QUESTIONS[diff] || [];
+      const cloned = raw.map(q => {
+        const choicesWithIdx = q.choices.map((c, idx) => ({text: c, origIdx: idx}));
+        shuffle(choicesWithIdx);
+        const newCorrect = choicesWithIdx.findIndex(o => o.origIdx === q.correct);
+        return { q: q.q, choices: choicesWithIdx.map(o=>o.text), correct: newCorrect, explain: q.explain };
+      });
+      shuffle(cloned);
+      return cloned;
+    }
+
     function setDifficulty(diff){
-      if(!QUESTIONS[diff]) return;
       state.difficulty = diff;
-      // clone and shuffle questions for this run
-      state.questions = shuffle([...QUESTIONS[diff]]);
-      state.index = 0;
-      state.score = 0;
-      state.correct = 0;
-      state.wrong = 0;
-      updateUI();
-      renderQuestion();
-      // update points per
+      state.questions = prepareQuestions(diff);
+      state.index = 0; state.score = 0; state.correct = 0; state.wrong = 0;
       pointsPerEl.textContent = POINTS[diff] + " Punkte";
       difficultyTag.textContent = diff.charAt(0).toUpperCase() + diff.slice(1);
-      // highlight selected difficulty button
       document.querySelectorAll('[data-diff]').forEach(btn=>{
-        btn.classList.toggle('primary', btn.dataset.diff===diff);
+        btn.classList.toggle('primary', btn.dataset.diff === diff);
+        btn.setAttribute('aria-selected', btn.dataset.diff === diff ? 'true' : 'false');
       });
+      updateUI();
+      renderQuestion();
     }
 
     function updateUI(){
-      qIndexEl.textContent = Math.min(state.index+1, state.questions.length);
+      qIndexEl.textContent = Math.min(state.index + 1, state.questions.length);
       qTotalEl.textContent = state.questions.length || 0;
       scoreEl.textContent = state.score;
       correctEl.textContent = state.correct;
       wrongEl.textContent = state.wrong;
-      const progPercent = state.questions.length ? Math.round((state.index / state.questions.length) * 100) : 0;
-      progBar.style.width = progPercent + '%';
+      const percent = state.questions.length ? Math.round((state.index / state.questions.length) * 100) : 0;
+      progBar.style.width = percent + '%';
+      // best scores
+      const be = localStorage.getItem('best_easy') || '—';
+      const bm = localStorage.getItem('best_medium') || '—';
+      const bh = localStorage.getItem('best_hard') || '—';
+      bestEasy.textContent = `Leicht: ${be}`;
+      bestMed.textContent = `Mittel: ${bm}`;
+      bestHard.textContent = `Schwer: ${bh}`;
     }
 
     function renderQuestion(){
       choicesEl.innerHTML = '';
       document.getElementById('feedbackArea').innerHTML = '';
       if(!state.questions.length){
-        questionText.textContent = "Bitte wähle eine Schwierigkeit, um zu starten.";
+        questionText.textContent = 'Bitte wähle eine Schwierigkeit (oben).';
+        qIndexEl.textContent = 0; qTotalEl.textContent = 0;
+        lastExplain.textContent = '—';
         return;
       }
       if(state.index >= state.questions.length){
-        // Quiz beendet — zeige Zusammenfassung
-        questionText.textContent = "Ende! Hier ist dein Ergebnis:";
-        choicesEl.innerHTML = `
-          <div class="explain" style="font-size:15px">
-            Du hast <strong>${state.correct}</strong> von <strong>${state.questions.length}</strong> richtig beantwortet.<br>
-            Punkte: <strong>${state.score}</strong>.
-          </div>
-        `;
-        lastExplain.textContent = "—";
+        // Ende
+        questionText.textContent = 'Quiz beendet — Ergebnis';
+        choicesEl.innerHTML = `<div class="explain">Du hast <strong>${state.correct}</strong> von <strong>${state.questions.length}</strong> richtig beantwortet.<br>Punkte: <strong>${state.score}</strong>.</div>`;
+        // update best score
+        const key = state.difficulty === 'easy' ? 'best_easy' : state.difficulty === 'medium' ? 'best_medium' : 'best_hard';
+        const prev = parseInt(localStorage.getItem(key) || '0', 10);
+        if(state.score > prev){
+          localStorage.setItem(key, state.score);
+        }
+        lastExplain.textContent = '—';
         updateUI();
         return;
       }
+
       const cur = state.questions[state.index];
       questionText.textContent = cur.q;
       // render choices
-      cur.choices.forEach((c, i) => {
+      cur.choices.forEach((text,i) => {
         const btn = document.createElement('button');
         btn.className = 'choice';
-        btn.textContent = c;
         btn.type = 'button';
-        btn.onclick = () => handleAnswer(i, btn, cur);
-        btn.setAttribute('aria-pressed', 'false');
+        btn.innerHTML = `<div class="label">${String.fromCharCode(65 + i)}</div><div style="flex:1">${text}</div>`;
+        btn.onclick = () => selectAnswer(i, btn, cur);
+        btn.setAttribute('data-index', i);
         choicesEl.appendChild(btn);
       });
+
       updateUI();
     }
 
-    function handleAnswer(selectedIndex, btnEl, cur){
-      // disable all choices
-      Array.from(choicesEl.children).forEach(b => b.disabled = true);
-      const correctIndex = cur.correct;
-      // visual feedback
-      if(selectedIndex === correctIndex){
+    function selectAnswer(i, btnEl, cur){
+      // disable all
+      Array.from(choicesEl.children).forEach(c => c.disabled = true);
+      const correct = cur.correct;
+      if(i === correct){
         btnEl.classList.add('correct');
-        state.score += POINTS[state.difficulty] || 0;
+        state.score += POINTS[state.difficulty];
         state.correct += 1;
-        // no explanation needed, but show small positive feedback
-        document.getElementById('feedbackArea').innerHTML = `<div class="explain" style="border-left:4px solid var(--success);">Richtig! +${POINTS[state.difficulty]} Punkte.</div>`;
-        lastExplain.textContent = "Richtig beantwortet — keine Erklärung nötig.";
+        document.getElementById('feedbackArea').innerHTML = `<div class="explain" style="border-left:4px solid rgba(16,185,129,0.8)"><strong>Richtig!</strong> +${POINTS[state.difficulty]} Punkte.</div>`;
+        lastExplain.textContent = 'Richtig beantwortet — keine Erklärung nötig.';
       } else {
-        // mark clicked wrong and mark correct
         btnEl.classList.add('wrong');
-        Array.from(choicesEl.children)[correctIndex].classList.add('correct');
+        const correctBtn = choicesEl.querySelector(`[data-index="${correct}"]`);
+        if(correctBtn) correctBtn.classList.add('correct');
         state.wrong += 1;
-        // show the explanation specifically because falsch
-        document.getElementById('feedbackArea').innerHTML = `<div class="explain" style="border-left:4px solid var(--danger);"><strong>Falsch.</strong> ${cur.explain}</div>`;
+        document.getElementById('feedbackArea').innerHTML = `<div class="explain" style="border-left:4px solid rgba(239,68,68,0.8)"><strong>Falsch.</strong> ${cur.explain}</div>`;
         lastExplain.textContent = cur.explain;
       }
-      // advance index only when "Nächste Frage" oder Skip pressed
       updateUI();
     }
 
     nextBtn.addEventListener('click', () => {
       if(!state.questions.length) return;
-      // move to next
       if(state.index < state.questions.length) state.index++;
       renderQuestion();
     });
 
     skipBtn.addEventListener('click', () => {
       if(!state.questions.length) return;
-      // count as wrong if skipped? We'll not penalize, but count as wrong for tracking.
+      // mark skip as wrong (wie vorher)
       state.wrong += 1;
       state.index++;
       renderQuestion();
     });
 
     resetBtn.addEventListener('click', () => {
-      if(confirm('Quiz zurücksetzen? Dein aktueller Score geht verloren.')){
-        state = {difficulty:null, questions:[], index:0, score:0, correct:0, wrong:0};
-        difficultyTag.textContent = "—";
-        pointsPerEl.textContent = "—";
-        document.querySelectorAll('[data-diff]').forEach(btn=>btn.classList.remove('primary'));
-        renderQuestion();
-        updateUI();
+      if(confirm('Quiz zurücksetzen? Score und Fortschritt gehen verloren.')){
+        setDifficulty(state.difficulty);
       }
     });
 
     // difficulty buttons
-    document.querySelectorAll('[data-diff]').forEach(btn=>{
+    document.querySelectorAll('[data-diff]').forEach(btn => {
       btn.addEventListener('click', () => setDifficulty(btn.dataset.diff));
     });
 
-    // init
-    renderQuestion();
-    updateUI();
-
-    // Optional: Tastatur-Unterstützung (1-4 um Antworten zu wählen)
+    // keyboard support
     window.addEventListener('keydown', (e) => {
       if(!state.questions.length || state.index >= state.questions.length) return;
-      if(e.key >= '1' && e.key <= '4'){
-        const i = parseInt(e.key) - 1;
-        const btn = choicesEl.children[i];
+      if(/^[1-4]$/.test(e.key)){
+        const idx = parseInt(e.key) - 1;
+        const btn = choicesEl.querySelector(`[data-index="${idx}"]`);
         if(btn && !btn.disabled) btn.click();
       } else if(e.key === 'Enter'){
         nextBtn.click();
@@ -392,7 +436,42 @@
       }
     });
 
+    // download results (JSON)
+    downloadBtn.addEventListener('click', () => {
+      const payload = {
+        date: new Date().toISOString(),
+        difficulty: state.difficulty,
+        score: state.score,
+        correct: state.correct,
+        wrong: state.wrong,
+        totalQuestions: state.questions.length,
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = `quiz-result-${state.difficulty}-${(new Date()).toISOString().slice(0,10)}.json`;
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+    });
+
+    // init: set default difficulty = medium
+    function init(){
+      // restore last difficulty if present
+      const lastDiff = localStorage.getItem('last_diff') || 'medium';
+      setDifficulty(lastDiff);
+      localStorage.setItem('last_diff', lastDiff);
+      updateUI();
+    }
+
+    // Save last difficulty on change
+    document.querySelectorAll('[data-diff]').forEach(btn=>{
+      btn.addEventListener('click', () => localStorage.setItem('last_diff', btn.dataset.diff));
+    });
+
+    init();
   </script>
 </body>
 </html>
+
+
 
